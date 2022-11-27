@@ -20,7 +20,7 @@ I = b*t^3/12;
 EA = E*A; % axial
 EI = E*I; % bending
 % to reduce axial deformation
-EA=EA*1000;%experiment with why this line is here - comment it out in terms of %. 
+%EA=EA*1000;%experiment with why this line is here - comment it out in terms of %. 
 
 %
 % Mesh definition
@@ -43,15 +43,15 @@ alpha = alpha*pi/180;
 % Calculating the position of nodes at the end of structural members  
 NodePoints = zeros(NumNodes,2);
 NodePoints(1,:) = [0 0]; %node 1 origin 
-NodePoints(1*NumElemSM+1,:) = [LengthSM*cos(alpha) -LengthSM*sin(alpha)]; %node 9
-NodePoints(2*NumElemSM+1,:) = [LengthSM*cos(alpha) -LengthSM-LengthSM*sin(alpha)]; %node 17
+NodePoints(1*NumElemSM+1,:) = [LengthSM/2 -LengthSM*sin(alpha)]; %node 9
+NodePoints(2*NumElemSM+1,:) = [-LengthSM/2 -LengthSM*sin(alpha)]; %node 17
 
 % Calculating the position of nodes along the lengh of structural members
 % using the positions of the start and end nodes of structural members
 for n=1:1:NumElemSM-1
     NodePoints(n+1,:) = NodePoints(1,:)+(NodePoints(1*NumElemSM+1,:)-NodePoints(1,:)).*n/NumElemSM;%nodes 2 to 8
     NodePoints(1*NumElemSM+n+1,:) = NodePoints(1*NumElemSM+1,:)+(NodePoints(2*NumElemSM+1,:)-NodePoints(1*NumElemSM+1,:)).*n/NumElemSM; %nodes 10 to 16
-    NodePoints(2*NumElemSM+n+1,:) = NodePoints(2*NumElemSM+1,:)+(NodePoints(1,:)-NodePoints(2*NumElemSM+1,:)).*n/NumElemSM; %nodes 17 to 24
+    NodePoints(2*NumElemSM+n+1,:) = NodePoints(2*NumElemSM+1,:)+(NodePoints(1,:)-NodePoints(2*NumElemSM+1,:)).*n/NumElemSM; %nodes 18 to 24
 end
 
 % Setting up a matrix of element definitions (start and end nodes)
@@ -68,9 +68,9 @@ end
 % Setting up a matrix of element angles (transforming from local to global
 % coordinate systems) for the hexagon
 ElemAngle = zeros(NumElems,1);
-ElemAngle(1:NumElemSM) = -alpha;%elements 1 to 8
-ElemAngle(1+1*NumElemSM:2*NumElemSM) = -pi/2; %elements 9 to 16
-ElemAngle(1+2*NumElemSM:3*NumElemSM) = -(pi-alpha); %elements 17 to 24
+ElemAngle(1:NumElemSM) = -(pi-alpha);%elements 1 to 8
+ElemAngle(1+1*NumElemSM:2*NumElemSM) = -2*pi+alpha; %elements 9 to 16
+ElemAngle(1+2*NumElemSM:3*NumElemSM) = 2*pi-alpha; %elements 17 to 24
 
 %Building structure stiffness matrix K
 
@@ -121,7 +121,7 @@ end
 %placing the bottom-right quadrant
 for n=1:NumNodes
     clear a
-    a=find(ElemNodes(:,2)==n);
+    a=find(ElemNodes(:,2)==n);%find end nodes
     if isempty(a)~=1
         for m=1:length(a)
             K(1+(n-1)*3:n*3,1+(n-1)*3:n*3)=...
@@ -132,9 +132,9 @@ end
 % placing the top-right and bottom-left quadrant
 for n=1:NumNodes
     clear a b
-    a=find(ElemNodes(:,1)==n);
+    a=find(ElemNodes(:,1)==n);%find start nodes
     if isempty(a)~=1
-        b=ElemNodes(a,2);
+        b=ElemNodes(a,2);%use end nodes for the same element
         for m=1:length(a)
             K(1+(n-1)*3:n*3,1+(b(m)-1)*3:b(m)*3)=...
                 K(1+(n-1)*3:n*3,1+(b(m)-1)*3:b(m)*3)+kdash(1:3,4:6,a(m));
@@ -144,7 +144,6 @@ for n=1:NumNodes
     end
 end
 
-%
 % Point load definition
 % Loading depends on whether we are looking at behaviour
 % in the global x or y direction
@@ -157,16 +156,15 @@ P = 1;
 NodeLoads = zeros(NumNodes,1);
 
 % Loading in the x direction
-LoadedNodeA = 1*NumElemSM+1;
+%LoadedNodeA = 1*NumElemSM+1;
 LoadedNodeB = 3*NumElemSM+1;
-NodeLoads(LoadedNodeA*3-2:LoadedNodeA*3) = [P/2 0 0]; %[x y z directions]
-NodeLoads(LoadedNodeB*3-2:LoadedNodeB*3)=[P/2 0 0];
+%NodeLoads(LoadedNodeA*3-2:LoadedNodeA*3) = [P/2 0 0]; %[x y z directions]
+NodeLoads(LoadedNodeB*3-2:LoadedNodeB*3)=[P 0 0];
 
 % % Loading in the y direction
 %LoadedNode = 1;
 %NodeLoads(LoadedNode*3-2:LoadedNode*3) = [0 -P 0];
 
-%
 % Boundary condition definition
 % Boundary conditions depend on whether we are looking a behaviour
 % in the global x or y direction
@@ -185,18 +183,19 @@ NodeLoads(LoadedNodeB*3-2:LoadedNodeB*3)=[P/2 0 0];
 % Rotation restrictions to replicate the hexagon being constrained with a
 % honeycomb lattice network
 
-FixRotNodes = [1*NumElemSM+1 0 0 0; 2*NumElemSM+1 0 0 1;3*NumElemSM+1 0 0 1];
+FixRotNodes = [1*NumElemSM 0 0 1; 2*NumElemSM+1 0 0 1; 3*NumElemSM+1 0 0 1];
 
 % Loading in the x direction
-%RollerNode = [2*NumElemSM+1 1 0]; % fixed in the x direction
-%PinnedNode = [1*NumElemSM+1 1 1]; % fixed in the x and y direction%5BCNodes = [RollerNode; PinnedNode; FixRotNodes];
-
-% % Loading in the y direction
-RollerNode = [2*NumElemSM+1 1 1 0]; % fixed in the x direction
-PinnedNode = [3*NumElemSM+1 1 1 0]; % fixed in the x and y direction
+RollerNode = [1*NumElemSM 1 0 0]; % fixed in the x direction
+PinnedNode = [2*NumElemSM+1 1 1 0]; % fixed in the x and y direction
 BCNodes = [RollerNode; PinnedNode; FixRotNodes];
 
-% Finding the fixed DOFs
+% % Loading in the y direction
+%RollerNode = [2*NumElemSM+1 1 1 0]; % fixed in the x direction
+%PinnedNode = [3*NumElemSM+1 1 1 0]; % fixed in the x and y direction
+%BCNodes = [RollerNode; PinnedNode; FixRotNodes];
+
+% Finding the fixed DOFs to adjust the structure stiffness matrix
 NumBCNodes = size(BCNodes,1);
 FixedDOFs = zeros(1,sum(sum(BCNodes(:,2:4)~=0)));
 a=0;
@@ -219,23 +218,17 @@ end
 
 %
 % Analysis
-%
-
-%
 % Finding the node displacements
 %
 
 RawNodeDisps=(K^-1).*(NodeLoads); %only analysis step within the whole code
 % Reshape the resulting matrix
-NodeDisps=reshape(RawNodeDisps,1,[]);
+NodeDisps=reshape(RawNodeDisps,3,[]);
 NodeDisps=NodeDisps';
 % Calculating the displaced node positions
-DispNodePoints = NodePoints+NodeDisps(:,:);
+DispNodePoints = NodePoints+NodeDisps(:,1:2);
 
-%
 % Finding node forces and moments
-%
-
 % Calculating beam end force and moments (in global axis system)
 BeamEndForcesGAS = zeros(NumElems,6);
 for n=1:NumElems
