@@ -257,7 +257,36 @@ BeamEndForcesLAS = zeros(NumElems,6);
 for n=1:NumElems
     BeamEndForcesLAS(n,:) = (k(:,:,n)*N(:,:,n)*[NodeDisps(ElemNodes(n,1),:)'; NodeDisps(ElemNodes(n,2),:)'])';
 end
+epsilon=(DispNodePoints-NodePoints)/(LengthSM+2*LengthSM*sin(alpha));
+stress=(P)/(LengthSM+LengthSM*cos(alpha))*b;
+Ex=stress./epsilon
 
+for n=1:5
+    logrhobar(n)=log(rhobar(n));
+    logEx(n)=log(Ex(n));
+end
+
+xabsis=linspace(min(logrhobar),0,10);
+
+
+p = polyfit(logrhobar,logEx,1);
+lininterp = polyval(p,xabsis);
+
+a = lininterp(length(xabsis));
+disp(a)
+alpha = exp(a-log(Es));
+
+
+beta = (lininterp(2)-lininterp(1))/(xabsis(2)-xabsis(1));
+
+
+plot(xabsis,lininterp)
+hold on
+scatter(logrhobar,logEx)
+xlabel("log(rhobar)")
+ylabel("log(Ex)")
+title("alpha="+num2str(alpha)+", Beta="+num2str(beta))
+hold off
 %
 % Plotting the displaced shape
 %
