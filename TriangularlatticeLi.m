@@ -259,9 +259,9 @@ for n=1:NumElems
 end
 %Calculation of stress
 Es=2; %given for nylon
-stress=(P)/(LengthSM+LengthSM*cos(alpha));
+stress=(P)/(LengthSM);
 %Calculation of direct strain
-epsilon=(DispNodePoints-NodePoints)/(LengthSM+2*LengthSM*sin(alpha));
+epsilon=(DispNodePoints-NodePoints)/(LengthSM);
 %calculation of lateral strain
 %epsilon_lateral=-P/3*Es*t;
 %Calculation of Young's modulus
