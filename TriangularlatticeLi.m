@@ -163,8 +163,8 @@ LoadedNode = 2*NumElemSM+1; % node17
 NodeLoads(LoadedNode*3-2:LoadedNode*3) = [P 0 0];
 
 % % Loading in the y direction
-% LoadedNode = 1; % node1
-% NodeLoads(LoadedNode*3-2:LoadedNode*3) = [0 -P 0];
+%LoadedNode = 1; % node1
+%NodeLoads(LoadedNode*3-2:LoadedNode*3) = [0 -P 0];
 
 %
 % Boundary condition definition
@@ -195,9 +195,9 @@ PinnedNode = [1*NumElemSM+1 1 1 0]; % node 9 fixed in the x and y direction
 BCNodes = [RollerNode; PinnedNode; FixRotNodes];
 
 % % Loading in the y direction
-% RollerNode = [2*NumElemSM+1 0 1 0]; % node 17 fixed in the y direction
-% PinnedNode = [1*NumElemSM+1 1 1 0]; % node 9 fixed in the x and y direction
-% BCNodes = [RollerNode; PinnedNode; FixRotNodes];
+%RollerNode = [2*NumElemSM+1 0 1 0]; % node 17 fixed in the y direction
+%PinnedNode = [1*NumElemSM+1 1 1 0]; % node 9 fixed in the x and y direction
+%BCNodes = [RollerNode; PinnedNode; FixRotNodes];
 
 % Finding the fixed DOFs
 NumBCNodes = size(BCNodes,1);
@@ -257,11 +257,12 @@ BeamEndForcesLAS = zeros(NumElems,6);
 for n=1:NumElems
     BeamEndForcesLAS(n,:) = (k(:,:,n)*N(:,:,n)*[NodeDisps(ElemNodes(n,1),:)'; NodeDisps(ElemNodes(n,2),:)'])';
 end
+
 %Calculation of stress
 Es=2; %given for nylon
-stress=(P)/(LengthSM);
+stress=(NodeExternalForcesGAS)/(LengthSM);
 %Calculation of direct strain
-epsilon=(DispNodePoints-NodePoints)/(LengthSM);
+epsilon=(NodeExternalForcesGAS)/(3*Es*t);
 %calculation of lateral strain
 %epsilon_lateral=-P/3*Es*t;
 %Calculation of Young's modulus
@@ -284,6 +285,7 @@ disp(a)
 alpha = exp(a-log(Es));
 
 beta = (lininterp(2)-lininterp(1))/(xabsis(2)-xabsis(1));
+
 %
 % Plotting the displaced shape
 %
@@ -307,7 +309,8 @@ hold on
 scatter(logrhobar, logEx);
 xlabel("log(rhobar)");
 ylabel("log(Ex)");
-title("alpha="+num2str(alpha)+", Beta="+num2str(beta));
+title("alpha="+num2str(alpha)+", Beta="+num2str(beta),['Magnification factor: ', num2str(MagFact)]);
+set(gca,'DataAspectRatio', [1 1 1]);
 hold off
 %
 % Plotting bending moment, axial force, and shear force diagrams
@@ -413,5 +416,3 @@ title('Beam Axes');
 set(gca,'DataAspectRatio',[1 1 1]);
 
 %%%% THE END %%%%
-
-
