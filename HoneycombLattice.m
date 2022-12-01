@@ -390,6 +390,31 @@ end
 title('Beam Axes');
 set(gca,'DataAspectRatio',[1 1 1]);
 
+% 
+% Calculate the elastic modulus EX and EY
+%
+
+% Calculate the effective stress
+% Loading in the x direction
+Sigma = (P/2)/((LengthSM+LengthSM*sin(alpha))*b);
+
+% % Loading in the y direction
+% Sigma = P/(LengthSM*cos(alpha)*b);
+
+% Calculate the effective strain
+% Loading in the x direction
+Epsilon = NodeDisps(1,1)/(LengthSM*cos(alpha));
+
+% % Loading in the y direction
+% Epsilon = -NodeDisps(1,2)/(LengthSM+LengthSM*sin(alpha));
+
+% Calculate Young's modulus by dividing the effective stress by strain
+% Loading in the x direction
+EX = Sigma/Epsilon;
+
+% % Loading in the y direction
+% EY = Sigma/Epsilon;
+
 %%%% THE END %%%%
 
 
