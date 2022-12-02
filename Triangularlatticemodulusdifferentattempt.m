@@ -401,7 +401,7 @@ Sigma = Axial/(LengthSM*sin(alpha)); % Option 2
 Epsilon = NodeDisps(1+2*NumElemSM,1)/LengthSM;
 
 % % Loading in the y direction
-% Epsilon = NodeDisps(1,2)/(LengthSM*sin(alpha));
+% Epsilon = -NodeDisps(1,2)/(LengthSM*sin(alpha));
 
 % Calculate Young's modulus by dividing the effective stress by strain
 % Loading in the x direction
