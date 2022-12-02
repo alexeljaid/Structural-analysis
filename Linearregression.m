@@ -5,7 +5,7 @@ Es=2000;
 rhobar=[0.05 0.1 0.15 0.2 0.25];
 % Ex=[1. 2. 3. 4. 5.]; %This is going to be our different values of Ex
 Ex=[0.3750 2.9999 10.1245 23.9978 46.8684]; %Ex for hexagon
-% Ex=[33.3333 66.6667 100.0000 133.3333 166.6667]; %Ex for triangular
+% Ex=[33.3333 66.6667 100.0000 133.3333 166.6667]; %Ex for triangle
 
 for n=1:5
     logrhobar(n)=log(rhobar(n));
