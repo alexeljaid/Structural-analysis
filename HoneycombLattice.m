@@ -10,7 +10,11 @@ close all
 
 % Assuming units are Newtons (N) and millimetres (mm)
 % Assuming a rectangular cross-section
-t = 1; % mm
+t = sqrt(3)/4;   % mm % relative density = 0.05
+% t = sqrt(3)/2;   % mm % relative density = 0.1
+% t = 3*sqrt(3)/4; % mm % relative density = 0.15
+% t = sqrt(3);     % mm % relative density = 0.2
+% t = 5*sqrt(3)/4; % mm % relative density = 0.25
 b = 1; % unit value (mm)
 E = 2000; % MPa
 % Calculating cross-sectional properties
