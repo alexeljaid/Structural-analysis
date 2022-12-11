@@ -188,7 +188,7 @@ NodeLoads(LoadedNode*3-2:LoadedNode*3) = [P 0 0];
 % Loading in the x direction
 RollerNode = [2*NumElemSM+1 0 1 0]; % node 17 fixed in the y direction
 PinnedNode = [1*NumElemSM+1 1 1 0]; % node 9 fixed in the x and y direction
-BCNodes = [RollerNode; PinnedNode; FixRotNodes];
+BCNodes = [RollerNode; PinnedNode];
 
 % % Loading in the y direction
 % RollerNode = [2*NumElemSM+1 0 1 0]; % node 17 fixed in the y direction
